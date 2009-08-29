@@ -1,7 +1,6 @@
 package uk.co.brotherlogic.busit;
 
 import java.io.IOException;
-import java.util.Calendar;
 
 /**
  * The arrival time for a given stop
@@ -20,8 +19,8 @@ public class BusTime
 	/** Any extra attributes of this bus */
 	private final String attributes;
 
-	/** The arrival time of the bus in a UNIX timestamp */
-	private long stopArrivalTimestamp;
+	/** The arrival time of the bus in a JAVA timestamp */
+	private final long stopArrivalTimestamp;
 
 	/**
 	 * Constructor
@@ -38,13 +37,12 @@ public class BusTime
 	 *             If we can't parse the time string
 	 */
 	public BusTime(final String id, final String dest, final String attr,
-			final String time) throws IOException
+			final long time) throws IOException
 	{
 		busId = id;
 		destination = dest;
 		attributes = attr;
-
-		parseTime(time);
+		stopArrivalTimestamp = time;
 	}
 
 	/**
@@ -65,42 +63,6 @@ public class BusTime
 	public final long getTime()
 	{
 		return stopArrivalTimestamp;
-	}
-
-	/**
-	 * Parses the time string
-	 * 
-	 * @param timeStr
-	 *            The String time in XX:YY or N min format
-	 * @throws ParseException
-	 *             if we can't parse the time
-	 */
-	private void parseTime(final String timeStr) throws IOException
-	{
-		Calendar time = Calendar.getInstance();
-
-		if (timeStr.contains(":"))
-		{
-			String[] elems = timeStr.split(":");
-			int hours = Integer.parseInt(elems[0]);
-			int minutes = Integer.parseInt(elems[1]);
-
-			time.set(Calendar.HOUR_OF_DAY, hours);
-			time.set(Calendar.MINUTE, minutes);
-
-			stopArrivalTimestamp = time.getTimeInMillis();
-		}
-		else if (timeStr.contains("min"))
-		{
-			String[] elems = timeStr.split("\\s+");
-			int mins = Integer.parseInt(elems[0]);
-
-			time.add(Calendar.MINUTE, mins);
-		}
-		else if (!timeStr.contains("Due"))
-			throw new IOException("Cannot parse: " + timeStr);
-
-		stopArrivalTimestamp = time.getTimeInMillis();
 	}
 
 	@Override

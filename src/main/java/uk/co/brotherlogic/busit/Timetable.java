@@ -12,6 +12,21 @@ import java.util.List;
 public interface Timetable
 {
 	/**
+	 * Adds a new stop into the database
+	 * 
+	 * @param stopID
+	 *            The number of the stop
+	 * @param lat
+	 *            The latitude location
+	 * @param lon
+	 *            The longitude location
+	 * @return The new stop once it's been added to the database
+	 * @throws IOException
+	 *             if something goes wrong
+	 */
+	BusStop addStop(String stopID, double lat, double lon) throws IOException;
+
+	/**
 	 * Method to get the closest stops to a particular location
 	 * 
 	 * @param lat

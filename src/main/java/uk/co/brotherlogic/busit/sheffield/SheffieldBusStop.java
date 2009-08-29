@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -137,7 +138,8 @@ public class SheffieldBusStop implements BusStop
 					if (rowPointer > FLOOR_OFFSET)
 					{
 						rowPointer = 0;
-						times.add(new BusTime(busID, dest, floor, time));
+						times.add(new BusTime(busID, dest, floor,
+								parseTime(time)));
 					}
 				}
 			}
@@ -169,6 +171,42 @@ public class SheffieldBusStop implements BusStop
 	public final String getStopId()
 	{
 		return stopId;
+	}
+
+	/**
+	 * Parses the time string
+	 * 
+	 * @param timeStr
+	 *            The String time in XX:YY or N min format
+	 * @throws ParseException
+	 *             if we can't parse the time
+	 */
+	private long parseTime(final String timeStr) throws IOException
+	{
+		Calendar time = Calendar.getInstance();
+
+		if (timeStr.contains(":"))
+		{
+			String[] elems = timeStr.split(":");
+			int hours = Integer.parseInt(elems[0]);
+			int minutes = Integer.parseInt(elems[1]);
+
+			time.set(Calendar.HOUR_OF_DAY, hours);
+			time.set(Calendar.MINUTE, minutes);
+
+			return time.getTimeInMillis();
+		}
+		else if (timeStr.contains("min"))
+		{
+			String[] elems = timeStr.split("\\s+");
+			int mins = Integer.parseInt(elems[0]);
+
+			time.add(Calendar.MINUTE, mins);
+		}
+		else if (!timeStr.contains("Due"))
+			throw new IOException("Cannot parse: " + timeStr);
+
+		return time.getTimeInMillis();
 	}
 
 	@Override

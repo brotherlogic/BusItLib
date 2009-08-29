@@ -15,7 +15,10 @@ public class SheffieldTimeTableUtilsTest extends TestCase
 		super(name);
 	}
 
-	public void testGetServices()
+	/**
+	 * Testing that we can get some services
+	 */
+	public final void testGetServices()
 	{
 		// Check that we're getting some services back from here
 		assertTrue(SheffieldBusUtils.getBusServices().size() > 0);

@@ -1,6 +1,8 @@
 package uk.co.brotherlogic.busit.sheffield;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
@@ -25,6 +27,19 @@ public class SheffieldTimetable implements Timetable
 
 	/** Where we pull the stop data from */
 	private static final String BASE_DATA_URL = "http://brotherlogic.plus.com:8090/";
+
+	@Override
+	public final BusStop addStop(final String stopID, final double lat,
+			final double lon) throws IOException
+	{
+		URL toAdd = new URL(BASE_DATA_URL + "add?stop_id=" + stopID + "&lat="
+				+ lat + "&lon=" + lon);
+		BufferedReader reader = new BufferedReader(new InputStreamReader(toAdd
+				.openStream()));
+		reader.close();
+
+		return getStop(stopID);
+	}
 
 	@Override
 	public final List<BusStop> getClosestStops(final double lat,
