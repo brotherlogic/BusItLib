@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -24,17 +22,9 @@ import uk.co.brotherlogic.busit.Timetable;
  */
 public class SheffieldTimetable implements Timetable
 {
-	/** The local bus stop map ID->bus stop */
-	private final Map<String, BusStop> stops = new TreeMap<String, BusStop>();
 
 	/** Where we pull the stop data from */
 	private static final String BASE_DATA_URL = "http://brotherlogic.plus.com:8090/";
-
-	/** Flag whether we have the timetables */
-	private final boolean gotTimetables = false;
-
-	/** The buffer size used when reading the timetables */
-	private static final int BUFFER_SIZE = 1024;
 
 	@Override
 	public final List<BusStop> getClosestStops(final double lat,
