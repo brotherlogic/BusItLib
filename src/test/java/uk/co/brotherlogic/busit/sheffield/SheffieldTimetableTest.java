@@ -29,18 +29,6 @@ public class SheffieldTimetableTest extends TestCase
 		assertNotNull(tTable.getStop("37021894"));
 	}
 
-	public final void testForClosest() throws IOException
-	{
-		final double heavygateLat = 53.3949;
-		final double heavygateLon = -1.502997;
-
-		// Check that we've got some times
-		System.err.println(tTable
-				.getClosestStops(heavygateLat, heavygateLon, 1).get(0).getID());
-		assertTrue(tTable.getClosestStops(heavygateLat, heavygateLon, 1).get(0)
-				.getID().equalsIgnoreCase("Rangeley Road [37021894]"));
-	}
-
 	/**
 	 * @return the suite of tests being tested
 	 */
