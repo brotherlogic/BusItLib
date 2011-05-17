@@ -22,196 +22,207 @@ import uk.co.brotherlogic.busit.BusTime;
  */
 public class SheffieldBusStop implements BusStop
 {
-	/** The stop ID */
-	private final String stopId;
+   /** The stop ID */
+   private final String stopId;
 
-	/** The name of the stop */
-	private String name;
+   /** The name of the stop */
+   private String name;
 
-	/** Where we pull the updates from */
-	private static final String UPDATE_URL = "http://tsy.acislive.com/pip/stop_simulator_table.asp?NaPTAN=REPLACE&bMap=1&offset=0&refresh=30&pscode=95&dest=&duegate=90&PAC=REPLACE";
+   /** Where we pull the updates from */
+   private static final String UPDATE_URL = "http://tsy.acislive.com/pip/stop_simulator_table.asp?NaPTAN=REPLACE&bMap=1&offset=0&refresh=30&pscode=95&dest=&duegate=90&PAC=REPLACE";
 
-	/** Where we can pull the name from */
-	private static final String NAME_URL = "http://tsy.acislive.com/pip/stop_simulator.asp?naptan=REPLACE&dest=";
+   /** Where we can pull the name from */
+   private static final String NAME_URL = "http://tsy.acislive.com/pip/stop_simulator.asp?naptan=REPLACE&dest=";
 
-	/** Offset of the BUS ID */
-	private static final int BUS_ID_OFFSET = 0;
+   /** Offset of the BUS ID */
+   private static final int BUS_ID_OFFSET = 0;
 
-	/** Offset of the destination */
-	private static final int DEST_OFFSET = 1;
+   /** Offset of the destination */
+   private static final int DEST_OFFSET = 1;
 
-	/** Offset of the time */
-	private static final int TIME_OFFSET = 2;
+   /** Offset of the time */
+   private static final int TIME_OFFSET = 2;
 
-	/** Offset of the floor status */
-	private static final int FLOOR_OFFSET = 3;
+   /** Offset of the floor status */
+   private static final int FLOOR_OFFSET = 3;
 
-	/**
-	 * Constructor
-	 * 
-	 * @param id
-	 *            The id of the stop
-	 * @param lat
-	 *            The latitude location
-	 * @param lon
-	 *            The longitude location
-	 * @param stopName
-	 *            The Name of the stop
-	 */
-	public SheffieldBusStop(final String id)
-	{
-		this.stopId = id;
-	}
+   public static void main(String[] args)
+   {
+      SheffieldBusStop stop = new SheffieldBusStop("37021894");
+      try
+      {
+         for (BusTime time : stop.getArrivalTimes())
+            System.err.println(time);
+      }
+      catch (IOException e)
+      {
+         // TODO Auto-generated catch block
+         e.printStackTrace();
+      }
+   }
 
-	@Override
-	public final void close()
-	{
-		// Do nothing
-	}
+   /**
+    * Constructor
+    * 
+    * @param id
+    *           The id of the stop
+    * @param lat
+    *           The latitude location
+    * @param lon
+    *           The longitude location
+    * @param stopName
+    *           The Name of the stop
+    */
+   public SheffieldBusStop(final String id)
+   {
+      this.stopId = id;
+   }
 
-	@Override
-	public final List<BusTime> getArrivalTimes() throws IOException
-	{
-		List<BusTime> times = new LinkedList<BusTime>();
+   @Override
+   public final void close()
+   {
+      // Do nothing
+   }
 
-		if (name == null)
-			try
-			{
-				URL tURL = new URL(NAME_URL.replace("REPLACE", stopId));
-				Pattern p = Pattern.compile("<title>.*?\\d+(.*?)</title>");
-				BufferedReader reader = new BufferedReader(
-						new InputStreamReader(tURL.openStream()));
-				for (String line = reader.readLine(); line != null
-						&& name == null; line = reader.readLine())
-				{
-					Matcher m = p.matcher(line);
-					while (m.find())
-						name = m.group(1).trim();
-				}
-				reader.close();
-			}
-			catch (MalformedURLException e)
-			{
-				throw new IOException(e.getLocalizedMessage());
-			}
+   @Override
+   public final List<BusTime> getArrivalTimes() throws IOException
+   {
+      List<BusTime> times = new LinkedList<BusTime>();
 
-		try
-		{
-			URL tURL = new URL(UPDATE_URL.replace("REPLACE", stopId));
-			Pattern p = Pattern.compile("<td.*?>(.*?)</td>");
-			BufferedReader reader = new BufferedReader(new InputStreamReader(
-					tURL.openStream()));
+      if (name == null)
+         try
+         {
+            URL tURL = new URL(NAME_URL.replace("REPLACE", stopId));
+            Pattern p = Pattern.compile("<title>.*?\\d+(.*?)</title>");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(tURL.openStream()));
+            for (String line = reader.readLine(); line != null && name == null; line = reader
+                  .readLine())
+            {
+               Matcher m = p.matcher(line);
+               while (m.find())
+                  name = m.group(1).trim();
+            }
+            reader.close();
+         }
+         catch (MalformedURLException e)
+         {
+            throw new IOException(e.getLocalizedMessage());
+         }
 
-			int rowPointer = 0;
-			String busID = "";
-			String dest = "";
-			String time = "";
+      try
+      {
+         URL tURL = new URL(UPDATE_URL.replace("REPLACE", stopId));
+         Pattern p = Pattern.compile("<td.*?>(.*?)</td>");
+         BufferedReader reader = new BufferedReader(new InputStreamReader(tURL.openStream()));
 
-			// Don't really use this
-			String floor = "";
+         int rowPointer = 0;
+         String busID = "";
+         String dest = "";
+         String time = "";
 
-			for (String line = reader.readLine(); line != null; line = reader
-					.readLine())
-			{
-				Matcher m = p.matcher(line.replace("&nbsp;", " "));
-				while (m.find())
-				{
-					switch (rowPointer)
-					{
-					case BUS_ID_OFFSET:
-						busID = m.group(1).trim();
-						break;
-					case DEST_OFFSET:
-						dest = m.group(1).trim();
-						break;
-					case TIME_OFFSET:
-						time = m.group(1).trim();
-						break;
-					case FLOOR_OFFSET:
-						floor = m.group(1).trim();
-						break;
-					default:
-						System.err.println("Unknow row value: " + rowPointer);
-					}
-					rowPointer++;
+         // Don't really use this
+         String floor = "";
 
-					if (rowPointer > FLOOR_OFFSET)
-					{
-						rowPointer = 0;
-						times.add(new BusTime(busID, dest, floor,
-								parseTime(time)));
-					}
-				}
-			}
-		}
-		catch (IOException e)
-		{
-			System.err.println("ERROR HERE : " + e.getLocalizedMessage());
-			e.printStackTrace();
-		}
+         for (String line = reader.readLine(); line != null; line = reader.readLine())
+         {
+            Matcher m = p.matcher(line.replace("&nbsp;", " "));
+            while (m.find())
+            {
+               switch (rowPointer)
+               {
+               case BUS_ID_OFFSET:
+                  busID = m.group(1).trim();
+                  break;
+               case DEST_OFFSET:
+                  dest = m.group(1).trim();
+                  break;
+               case TIME_OFFSET:
+                  time = m.group(1).trim();
+                  break;
+               case FLOOR_OFFSET:
+                  floor = m.group(1).trim();
+                  break;
+               default:
+                  System.err.println("Unknow row value: " + rowPointer);
+               }
+               rowPointer++;
 
-		return times;
-	}
+               if (rowPointer > FLOOR_OFFSET)
+               {
+                  rowPointer = 0;
+                  times.add(new BusTime(busID, dest, floor, parseTime(time)));
+               }
+            }
+         }
+      }
+      catch (IOException e)
+      {
+         System.err.println("ERROR HERE : " + e.getLocalizedMessage());
+         e.printStackTrace();
+      }
 
-	@Override
-	public final String getID()
-	{
-		if (name == null)
-			try
-			{
-				getArrivalTimes();
-			}
-			catch (IOException e)
-			{
-				e.printStackTrace();
-			}
-		return name + " [" + stopId + "]";
-	}
+      return times;
+   }
 
-	public final String getStopId()
-	{
-		return stopId;
-	}
+   @Override
+   public final String getID()
+   {
+      if (name == null)
+         try
+         {
+            getArrivalTimes();
+         }
+         catch (IOException e)
+         {
+            e.printStackTrace();
+         }
+      return name + " [" + stopId + "]";
+   }
 
-	/**
-	 * Parses the time string
-	 * 
-	 * @param timeStr
-	 *            The String time in XX:YY or N min format
-	 * @throws ParseException
-	 *             if we can't parse the time
-	 */
-	private long parseTime(final String timeStr) throws IOException
-	{
-		Calendar time = Calendar.getInstance();
+   public final String getStopId()
+   {
+      return stopId;
+   }
 
-		if (timeStr.contains(":"))
-		{
-			String[] elems = timeStr.split(":");
-			int hours = Integer.parseInt(elems[0]);
-			int minutes = Integer.parseInt(elems[1]);
+   /**
+    * Parses the time string
+    * 
+    * @param timeStr
+    *           The String time in XX:YY or N min format
+    * @throws ParseException
+    *            if we can't parse the time
+    */
+   private long parseTime(final String timeStr) throws IOException
+   {
+      Calendar time = Calendar.getInstance();
 
-			time.set(Calendar.HOUR_OF_DAY, hours);
-			time.set(Calendar.MINUTE, minutes);
+      if (timeStr.contains(":"))
+      {
+         String[] elems = timeStr.split(":");
+         int hours = Integer.parseInt(elems[0]);
+         int minutes = Integer.parseInt(elems[1]);
 
-			return time.getTimeInMillis();
-		}
-		else if (timeStr.contains("min"))
-		{
-			String[] elems = timeStr.split("\\s+");
-			int mins = Integer.parseInt(elems[0]);
+         time.set(Calendar.HOUR_OF_DAY, hours);
+         time.set(Calendar.MINUTE, minutes);
 
-			time.add(Calendar.MINUTE, mins);
-		}
-		else if (!timeStr.contains("Due"))
-			throw new IOException("Cannot parse: " + timeStr);
+         return time.getTimeInMillis();
+      }
+      else if (timeStr.contains("min"))
+      {
+         String[] elems = timeStr.split("\\s+");
+         int mins = Integer.parseInt(elems[0]);
 
-		return time.getTimeInMillis();
-	}
+         time.add(Calendar.MINUTE, mins);
+      }
+      else if (!timeStr.contains("Due"))
+         throw new IOException("Cannot parse: " + timeStr);
 
-	@Override
-	public final String toString()
-	{
-		return "STOP_ID:" + stopId;
-	}
+      return time.getTimeInMillis();
+   }
+
+   @Override
+   public final String toString()
+   {
+      return "STOP_ID:" + stopId;
+   }
 }
