@@ -17,8 +17,8 @@
   </dependencies>
   
   <scm>
-   <connection>scm:git:git@github.com:BrotherLogic/BustIt-Lib.git</connection>
-   <url>scm:git:git@github.com:BrotherLogic/BusIt-Lib.git</url>
+   <connection>scm:git:git@github.com:BrotherLogic/BustItLib.git</connection>
+   <url>scm:git:git@github.com:BrotherLogic/BusItLib.git</url>
   </scm>
 
   
