@@ -15,6 +15,21 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+  
+  <scm>
+   <connection>scm:git:git@github.com:BrotherLogic/BustIt-Lib.git</connection>
+   <url>scm:git:git@github.com:BrotherLogic/BusIt-Lib.git</url>
+  </scm>
+
+  
+  <distributionManagement>
+    <repository>
+      <id>edip</id>
+      <name>edip-releases</name>
+      <url>http://edip:8085/artifactory/libs-releases-local</url>
+    </repository>
+  </distributionManagement>
+  
   <build>
     <pluginManagement>
       <plugins>
