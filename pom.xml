@@ -3,7 +3,7 @@
   <groupId>uk.co.brotherlogic</groupId>
   <artifactId>busitlib</artifactId>
   <packaging>jar</packaging>
-  <version>0.1</version>
+  <version>0.1-SNAPSHOT</version>
   <name>busitlib</name>
   <url>http://maven.apache.org</url>
   <dependencies>
