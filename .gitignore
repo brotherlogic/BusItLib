@@ -2,3 +2,7 @@
 target
 .project
 .settings
+bin
+.classpath
+etc
+.fbprefs

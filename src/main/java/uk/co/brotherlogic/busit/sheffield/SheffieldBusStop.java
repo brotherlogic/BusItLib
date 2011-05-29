@@ -22,6 +22,22 @@ import uk.co.brotherlogic.busit.BusTime;
  */
 public class SheffieldBusStop implements BusStop
 {
+   public static void main(String[] args)
+   {
+      SheffieldBusStop stop = new SheffieldBusStop("37021894");
+      System.err.println(stop.getID());
+      try
+      {
+         for (BusTime time : stop.getArrivalTimes())
+            System.err.println(time);
+      }
+      catch (IOException e)
+      {
+         // TODO Auto-generated catch block
+         e.printStackTrace();
+      }
+   }
+
    /** The stop ID */
    private final String stopId;
 
@@ -46,20 +62,11 @@ public class SheffieldBusStop implements BusStop
    /** Offset of the floor status */
    private static final int FLOOR_OFFSET = 3;
 
-   public static void main(String[] args)
-   {
-      SheffieldBusStop stop = new SheffieldBusStop("37021894");
-      try
-      {
-         for (BusTime time : stop.getArrivalTimes())
-            System.err.println(time);
-      }
-      catch (IOException e)
-      {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
-      }
-   }
+   /** Latitude location of the bus stop */
+   private double latitude;
+
+   /** Longitude location of the bus stop */
+   private double longitude;
 
    /**
     * Constructor
@@ -76,6 +83,14 @@ public class SheffieldBusStop implements BusStop
    public SheffieldBusStop(final String id)
    {
       this.stopId = id;
+   }
+
+   public SheffieldBusStop(final String id, final String name, final Double lat, final Double lon)
+   {
+      this(id);
+      this.name = name;
+      longitude = lon;
+      latitude = lat;
    }
 
    @Override
@@ -154,6 +169,8 @@ public class SheffieldBusStop implements BusStop
                }
             }
          }
+
+         reader.close();
       }
       catch (IOException e)
       {
@@ -162,6 +179,12 @@ public class SheffieldBusStop implements BusStop
       }
 
       return times;
+   }
+
+   @Override
+   public double getDist(double lat, double lon)
+   {
+      return Math.sqrt((lat - latitude) * (lat - latitude) + (lon - longitude) * (lon - longitude));
    }
 
    @Override
@@ -176,10 +199,10 @@ public class SheffieldBusStop implements BusStop
          {
             e.printStackTrace();
          }
-      return name + " [" + stopId + "]";
+      return name;
    }
 
-   public final String getStopId()
+   public final String getStopID()
    {
       return stopId;
    }
@@ -223,6 +246,6 @@ public class SheffieldBusStop implements BusStop
    @Override
    public final String toString()
    {
-      return "STOP_ID:" + stopId;
+      return "STOP_ID:" + stopId + "@" + latitude + "," + longitude;
    }
 }
