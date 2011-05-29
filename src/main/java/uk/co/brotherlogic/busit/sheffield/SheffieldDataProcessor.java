@@ -33,8 +33,13 @@ public class SheffieldDataProcessor
       System.out.println(stops.size());
    }
 
-   public List<BusStop> process(InputStream dataFile) throws IOException
+   private String cleanStopNumber(String stopNumber)
+   {
+      // Sheffield bus stops truncate the 3700 to 370 for some reason
+      return stopNumber.substring(0, 2) + stopNumber.substring(3);
+   }
 
+   public List<BusStop> process(InputStream dataFile) throws IOException
    {
 
       List<BusStop> busstops = new LinkedList<BusStop>();
@@ -71,8 +76,8 @@ public class SheffieldDataProcessor
                   else if (cnode.getLocalName().equals("Lat"))
                      lat = cnode.getTextContent();
             }
-            busstops.add(new SheffieldBusStop(stopNumber, stopName, Double.parseDouble(lon), Double
-                  .parseDouble(lat)));
+            busstops.add(new SheffieldBusStop(cleanStopNumber(stopNumber), stopName, Double
+                  .parseDouble(lon), Double.parseDouble(lat)));
          }
       }
       catch (XPathExpressionException e)

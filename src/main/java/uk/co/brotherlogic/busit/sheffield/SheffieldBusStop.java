@@ -25,6 +25,7 @@ public class SheffieldBusStop implements BusStop
    public static void main(String[] args)
    {
       SheffieldBusStop stop = new SheffieldBusStop("37021894");
+      System.err.println(stop.getID());
       try
       {
          for (BusTime time : stop.getArrivalTimes())
@@ -168,6 +169,8 @@ public class SheffieldBusStop implements BusStop
                }
             }
          }
+
+         reader.close();
       }
       catch (IOException e)
       {
@@ -196,10 +199,10 @@ public class SheffieldBusStop implements BusStop
          {
             e.printStackTrace();
          }
-      return name + " [" + stopId + "]";
+      return name;
    }
 
-   public final String getStopId()
+   public final String getStopID()
    {
       return stopId;
    }
@@ -243,6 +246,6 @@ public class SheffieldBusStop implements BusStop
    @Override
    public final String toString()
    {
-      return "STOP_ID:" + stopId;
+      return "STOP_ID:" + stopId + "@" + latitude + "," + longitude;
    }
 }

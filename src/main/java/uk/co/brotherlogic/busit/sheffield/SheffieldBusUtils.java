@@ -58,7 +58,7 @@ public final class SheffieldBusUtils
          try
          {
             SheffieldBusUtils utils = new SheffieldBusUtils();
-            InputStream is = utils.getClass().getResource("sheffield.xml").openStream();
+            InputStream is = utils.getClass().getResourceAsStream("sheffield.xml");
             SheffieldDataProcessor proc = new SheffieldDataProcessor();
             busStops.addAll(proc.process(is));
          }

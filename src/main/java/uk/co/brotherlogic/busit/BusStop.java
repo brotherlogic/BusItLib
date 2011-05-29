@@ -33,4 +33,11 @@ public interface BusStop
     * @return a String ID for the stop
     */
    String getID();
+
+   /**
+    * Get the code for this stop
+    * 
+    * @return the ATCO Code for the stop
+    */
+   String getStopID();
 }
